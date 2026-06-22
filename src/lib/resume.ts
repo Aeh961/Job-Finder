@@ -25,6 +25,8 @@ const knownSkills = [
   "CI/CD"
 ];
 
+const maxResumeBytes = 1024 * 1024;
+
 export type ResumeUploadInput = {
   fileName: string;
   mimeType?: string;
@@ -38,6 +40,15 @@ export type ResumeExtractionResult =
 export function extractResumeText(input: ResumeUploadInput): ResumeExtractionResult {
   const fileName = input.fileName.toLowerCase();
   const mimeType = input.mimeType?.toLowerCase() ?? "";
+  const byteLength = Buffer.isBuffer(input.content) ? input.content.byteLength : Buffer.byteLength(input.content, "utf8");
+
+  if (byteLength > maxResumeBytes) {
+    return {
+      ok: false,
+      fileType: "unsupported",
+      error: "Resume file is too large. Upload a TXT or Markdown file under 1 MB."
+    };
+  }
 
   if (fileName.endsWith(".pdf") || mimeType.includes("pdf")) {
     return {

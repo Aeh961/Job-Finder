@@ -2,6 +2,15 @@
 
 ## Completed
 
+### Senior Review Fixes
+
+- Fixed the highest-priority V2 deployment gap: `npm run refresh-jobs` now performs a real database-backed refresh for Greenhouse and Lever employers instead of only printing placeholder readiness text.
+- Added refresh behavior that upserts job postings, recalculates user job matches, reports provider errors without aborting the entire run, and renders local email previews when no email provider key is set.
+- Added Resend-compatible email alert sending through `RESEND_API_KEY`, `EMAIL_FROM`, and `ALERT_EMAIL_TO` environment variables.
+- Added `JOB_REFRESH_TIMEOUT_MS` to control external job board request timeouts.
+- Added resume upload size limits in both browser and shared resume extraction code to avoid reading oversized files into memory.
+- Added test coverage for oversized resume rejection.
+
 ### V2
 
 - Added an onboarding flow that guides users through profile setup, resume upload, employer watchlist, job review, and application packet generation.
@@ -47,3 +56,4 @@
 - OpenAI and Anthropic provider branches are configured as extension points but not yet calling provider SDKs.
 - Discovery is intentionally limited to Greenhouse and Lever.
 - Resume PDF parsing is detected but not implemented yet.
+- Saved and ignored job buttons are client-side demo controls until server actions are wired.

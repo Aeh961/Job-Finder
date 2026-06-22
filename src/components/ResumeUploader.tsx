@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { Upload } from "lucide-react";
 import { extractSkillsFromResume } from "@/lib/resume";
 
+const maxResumeBytes = 1024 * 1024;
+
 export function ResumeUploader() {
   const [text, setText] = useState("");
   const [fileName, setFileName] = useState("");
@@ -19,6 +21,12 @@ export function ResumeUploader() {
 
     try {
       const lowerName = file.name.toLowerCase();
+      if (file.size > maxResumeBytes) {
+        setError("Resume file is too large. Upload a TXT or Markdown file under 1 MB.");
+        setText("");
+        return;
+      }
+
       if (lowerName.endsWith(".pdf") || file.type.includes("pdf")) {
         setError("PDF upload is recognized, but V2 starts with TXT and Markdown text extraction. PDF parsing is tracked in the roadmap.");
         setText("");

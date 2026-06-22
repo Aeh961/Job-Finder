@@ -74,7 +74,7 @@ npm test
 npm run refresh-jobs
 ```
 
-The command is safe by default. Without `DATABASE_URL`, it runs in local fallback mode. With a database configured, it inspects tracked employers and only treats Greenhouse and Lever employers as refreshable.
+The command is safe by default. Without `DATABASE_URL`, it runs in local fallback mode. With a database configured, it fetches supported Greenhouse and Lever employers, upserts jobs, scores matches for users, and renders or sends high-match email alerts. Unsupported employers stay in manual review.
 
 ## Email Alerts
 
@@ -86,6 +86,7 @@ ALERT_EMAIL_TO="you@example.com"
 EMAIL_FROM="JobFinder AI <alerts@example.com>"
 RESEND_API_KEY=""
 HIGH_MATCH_THRESHOLD="80"
+JOB_REFRESH_TIMEOUT_MS="15000"
 ```
 
 If no provider key is configured, the app renders the alert content locally and does not send email.

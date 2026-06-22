@@ -19,6 +19,12 @@ describe("resume utilities", () => {
     if (!result.ok) expect(result.error).toContain("PDF");
   });
 
+  it("rejects oversized resume uploads before parsing", () => {
+    const result = extractResumeText({ fileName: "resume.txt", mimeType: "text/plain", content: "x".repeat(1024 * 1024 + 1) });
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain("too large");
+  });
+
   it("extracts known skills and builds a summary", () => {
     const text = "Built Next.js apps with TypeScript, Prisma, PostgreSQL, Docker, and OpenAI integrations.";
     expect(extractSkillsFromResume(text)).toEqual(["Docker", "Next.js", "OpenAI", "PostgreSQL", "Prisma", "TypeScript"]);
