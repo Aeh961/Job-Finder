@@ -14,6 +14,20 @@ JobFinder AI is a SaaS-style MVP for tracking target employers, discovering jobs
 - Prisma schema for PostgreSQL
 - Basic tests for scoring, parsers, and utilities
 
+## V2 Features
+
+- Real onboarding checklist for profile, resume, watchlist, job review, and packets
+- Resume upload page with TXT and Markdown extraction
+- PDF upload detection with a clear TODO instead of unreliable parsing
+- Skills extraction from resume text
+- Improved target employer watchlist with priority and manual review states
+- Daily refresh command: `npm run refresh-jobs`
+- Local fallback email alert rendering with environment-variable hooks
+- Saved jobs and ignored jobs demo workflow
+- Application packet generation page
+- More detailed job detail page with score breakdown and generated materials
+- Seed data for a realistic software engineer user and target employers
+
 ## Run Locally
 
 1. Install dependencies:
@@ -35,6 +49,7 @@ cp .env.example .env
 ```bash
 npx prisma generate
 npx prisma db push
+npm run seed
 ```
 
 5. Run the app:
@@ -52,6 +67,37 @@ The app currently ships with demo data so it is usable before a database is conn
 ```bash
 npm test
 ```
+
+## Daily Refresh
+
+```bash
+npm run refresh-jobs
+```
+
+The command is safe by default. Without `DATABASE_URL`, it runs in local fallback mode. With a database configured, it inspects tracked employers and only treats Greenhouse and Lever employers as refreshable.
+
+## Email Alerts
+
+Set these variables when you are ready to send real alerts:
+
+```bash
+EMAIL_PROVIDER="local"
+ALERT_EMAIL_TO="you@example.com"
+EMAIL_FROM="JobFinder AI <alerts@example.com>"
+RESEND_API_KEY=""
+HIGH_MATCH_THRESHOLD="80"
+```
+
+If no provider key is configured, the app renders the alert content locally and does not send email.
+
+## Vercel Deployment
+
+1. Create a Vercel project from the GitHub repository.
+2. Add a hosted PostgreSQL database and set `DATABASE_URL`.
+3. Add optional `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `ALERT_EMAIL_TO`, and `EMAIL_FROM`.
+4. Keep the default build command: `npm run build`.
+5. The `postinstall` script runs `prisma generate` for deployment readiness.
+6. Run `npx prisma db push` or a migration command against production before first use.
 
 ## Job Discovery Policy
 

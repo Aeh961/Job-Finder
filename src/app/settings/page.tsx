@@ -9,7 +9,10 @@ export default function SettingsPage() {
           <Setting label="Database" value="PostgreSQL through DATABASE_URL" />
           <Setting label="Auth" value="Stub mode for MVP" />
           <Setting label="AI provider" value="Local fallback unless OPENAI_API_KEY or ANTHROPIC_API_KEY is set" />
+          <Setting label="Email alerts" value="Local fallback unless RESEND_API_KEY, ALERT_EMAIL_TO, and EMAIL_FROM are configured" />
+          <Setting label="Daily refresh" value="Run npm run refresh-jobs locally or schedule the command in a worker" />
           <Setting label="Discovery" value="Greenhouse and Lever only; unsupported employers are marked manual review needed" />
+          <Setting label="Vercel" value="Set DATABASE_URL and environment variables, then run prisma generate during build" />
         </div>
       </div>
     </AppShell>

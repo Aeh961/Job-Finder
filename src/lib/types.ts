@@ -25,6 +25,7 @@ export type EmployerInput = {
   boardProvider: BoardProvider;
   boardToken?: string;
   careersUrl?: string;
+  website?: string;
   priority: number;
   manualReviewNeeded?: boolean;
 };

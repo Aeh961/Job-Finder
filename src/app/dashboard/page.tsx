@@ -2,17 +2,19 @@ import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { JobCard } from "@/components/JobCard";
 import { StatusBadge } from "@/components/StatusBadge";
-import { demoApplications, demoEmployers, demoMatches } from "@/lib/demo-data";
+import { demoApplications, demoEmployers, demoJobSelections, demoMatches } from "@/lib/demo-data";
+import { summarizeSelections } from "@/lib/job-selections";
 
 export default function DashboardPage() {
   const topMatches = [...demoMatches].sort((a, b) => b.match.score - a.match.score).slice(0, 3);
+  const selectionSummary = summarizeSelections(demoJobSelections);
   return (
     <AppShell title="Dashboard" action={<Link href="/jobs" className="rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white">Review jobs</Link>}>
       <div className="grid gap-4 md:grid-cols-4">
         <Stat label="Tracked employers" value={demoEmployers.length} />
         <Stat label="Discovered jobs" value={demoMatches.length} />
-        <Stat label="Saved applications" value={demoApplications.length} />
-        <Stat label="Top score" value={Math.max(...demoMatches.map((item) => item.match.score))} />
+        <Stat label="Saved jobs" value={selectionSummary.saved} />
+        <Stat label="Ignored jobs" value={selectionSummary.ignored} />
       </div>
       <section className="mt-6 grid gap-6 xl:grid-cols-[1fr_360px]">
         <div className="space-y-4">

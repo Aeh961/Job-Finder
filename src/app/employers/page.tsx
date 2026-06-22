@@ -2,8 +2,15 @@ import { AppShell } from "@/components/AppShell";
 import { demoEmployers } from "@/lib/demo-data";
 
 export default function EmployersPage() {
+  const supportedCount = demoEmployers.filter((employer) => employer.boardProvider !== "unsupported").length;
+  const manualCount = demoEmployers.length - supportedCount;
   return (
     <AppShell title="Target Employers">
+      <div className="mb-5 grid gap-4 md:grid-cols-3">
+        <WatchMetric label="Watchlist size" value={demoEmployers.length} />
+        <WatchMetric label="Auto-refreshable" value={supportedCount} />
+        <WatchMetric label="Manual review" value={manualCount} />
+      </div>
       <div className="grid gap-5 xl:grid-cols-[360px_1fr]">
         <form className="rounded-md border border-line bg-white p-5 shadow-soft">
           <h2 className="font-semibold">Add employer</h2>
@@ -31,11 +38,24 @@ export default function EmployersPage() {
                 </div>
                 <span className="rounded-md bg-cloud px-2 py-1 text-xs font-medium">{employer.boardProvider}</span>
               </div>
-              {employer.manualReviewNeeded ? <p className="mt-3 text-sm text-coral">Unsupported board. Manual review needed.</p> : null}
+              <div className="mt-3 flex flex-wrap gap-2 text-xs text-ink/60">
+                <span className="rounded-md bg-cloud px-2 py-1">Priority {employer.priority}/5</span>
+                <span className="rounded-md bg-cloud px-2 py-1">{employer.boardToken ? `Token: ${employer.boardToken}` : "No board token"}</span>
+              </div>
+              {employer.manualReviewNeeded ? <p className="mt-3 text-sm text-coral">Unsupported board. Manual review needed before refresh.</p> : null}
             </article>
           ))}
         </div>
       </div>
     </AppShell>
+  );
+}
+
+function WatchMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-md border border-line bg-white p-4 shadow-soft">
+      <p className="text-sm text-ink/55">{label}</p>
+      <p className="mt-2 text-2xl font-semibold">{value}</p>
+    </div>
   );
 }

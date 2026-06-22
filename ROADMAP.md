@@ -1,5 +1,23 @@
 # Roadmap
 
+## V2.1 Persistence
+
+- Wire onboarding, resume upload, employer watchlist, saved jobs, ignored jobs, and packets to Prisma mutations.
+- Add optimistic UI updates backed by real server actions.
+- Persist generated application packets per job.
+
+## V2.2 Resume Intelligence
+
+- Add reliable PDF parsing.
+- Add resume section detection and experience summaries.
+- Let users accept or reject extracted skills before saving.
+
+## V2.3 Alerts and Refresh
+
+- Add a Vercel cron route for daily refresh scheduling.
+- Send high-match job emails through a production provider.
+- Add alert preferences, threshold controls, and unsubscribe handling.
+
 ## V1.1 Persistence
 
 - Wire profile, employer, saved job, and application forms to Prisma mutations.

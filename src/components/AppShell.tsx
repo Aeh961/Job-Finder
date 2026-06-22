@@ -1,12 +1,15 @@
 import Link from "next/link";
-import { BriefcaseBusiness, Building2, ClipboardList, LayoutDashboard, Settings, UserRound } from "lucide-react";
+import { BriefcaseBusiness, Building2, ClipboardList, FileText, LayoutDashboard, Rocket, Settings, Sparkles, UserRound } from "lucide-react";
 
 const navItems = [
+  { href: "/onboarding", label: "Onboarding", icon: Rocket },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/profile", label: "Profile", icon: UserRound },
+  { href: "/resume", label: "Resume", icon: FileText },
   { href: "/employers", label: "Employers", icon: Building2 },
   { href: "/jobs", label: "Jobs", icon: BriefcaseBusiness },
   { href: "/applications", label: "Applications", icon: ClipboardList },
+  { href: "/packets", label: "Packets", icon: Sparkles },
   { href: "/settings", label: "Settings", icon: Settings }
 ];
 

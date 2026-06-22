@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import type { JobMatchResult, NormalizedJob } from "@/lib/types";
 import { ScoreBadge } from "./ScoreBadge";
+import { JobActions } from "./JobActions";
 
 export function JobCard({ job, match }: { job: NormalizedJob; match: JobMatchResult }) {
   return (
@@ -23,6 +24,9 @@ export function JobCard({ job, match }: { job: NormalizedJob; match: JobMatchRes
         <a href={job.originalJobUrl} className="ml-auto inline-flex items-center gap-1 font-medium text-moss" target="_blank" rel="noreferrer">
           Source <ExternalLink className="h-3 w-3" />
         </a>
+      </div>
+      <div className="mt-4">
+        <JobActions />
       </div>
     </article>
   );

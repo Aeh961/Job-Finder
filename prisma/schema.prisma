@@ -29,6 +29,11 @@ enum ApplicationStatus {
   offer
 }
 
+enum JobInterestState {
+  saved
+  ignored
+}
+
 model User {
   id          String       @id @default(cuid())
   email       String       @unique
@@ -41,6 +46,7 @@ model User {
   matches     JobMatch[]
   applications Application[]
   packets     GeneratedApplicationPacket[]
+  jobSelections UserJobSelection[]
 }
 
 model UserProfile {
@@ -115,8 +121,23 @@ model JobPosting {
   matches         JobMatch[]
   applications    Application[]
   packets         GeneratedApplicationPacket[]
+  selections      UserJobSelection[]
 
   @@unique([sourceProvider, externalId])
+}
+
+model UserJobSelection {
+  id           String           @id @default(cuid())
+  userId       String
+  jobPostingId String
+  state        JobInterestState
+  note         String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobPosting   JobPosting       @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobPostingId])
 }
 
 model JobMatch {

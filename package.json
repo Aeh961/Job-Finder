@@ -5,8 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
+    "refresh-jobs": "node scripts/refresh-jobs.mjs",
+    "seed": "node prisma/seed.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },
