@@ -1,15 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { generatePacketAction, updateApplicationStatusAction } from "@/app/actions";
 import { AppShell } from "@/components/AppShell";
 import { JobActions } from "@/components/JobActions";
 import { ScoreBadge } from "@/components/ScoreBadge";
 import { generateApplicationPacket } from "@/lib/ai";
-import { demoMatches, demoProfile } from "@/lib/demo-data";
+import { applicationStatuses } from "@/lib/db-utils";
+import { getDashboardData } from "@/lib/user-data";
 
 export default async function JobDetailPage({ params }: { params: { id: string } }) {
-  const item = demoMatches.find(({ job }) => job.id === params.id);
+  const data = await getDashboardData();
+  const item = data.matches.find(({ job }) => job.id === params.id);
   if (!item) notFound();
-  const packet = await generateApplicationPacket(demoProfile, item.job, item.match);
+  const packet = await generateApplicationPacket(data.profile, item.job, item.match);
+  const selection = data.selections.find((candidate) => candidate.jobId === item.job.id);
 
   return (
     <AppShell title="Job Detail" action={<Link href="/jobs" className="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold">Back to jobs</Link>}>
@@ -37,8 +41,26 @@ export default async function JobDetailPage({ params }: { params: { id: string }
             Open original posting
           </a>
           <div className="mt-4">
-            <JobActions />
+            <JobActions jobId={item.job.id} initialState={selection?.state} disabled={data.mode === "demo"} />
           </div>
+          <form action={updateApplicationStatusAction} className="mt-6 rounded-md bg-cloud p-4">
+            <input type="hidden" name="jobId" value={item.job.id} />
+            <label className="text-sm font-semibold">
+              Application status
+              <select className="mt-2 rounded-md border border-line px-3 py-2" name="status" defaultValue="interested" disabled={data.mode === "demo"}>
+                {applicationStatuses.map((status) => <option key={status} value={status}>{status}</option>)}
+              </select>
+            </label>
+            <button className="mt-3 rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" disabled={data.mode === "demo"} type="submit">
+              Update status
+            </button>
+          </form>
+          <form action={generatePacketAction} className="mt-3">
+            <input type="hidden" name="jobId" value={item.job.id} />
+            <button className="rounded-md border border-line bg-white px-4 py-2 text-sm font-semibold disabled:opacity-60" disabled={data.mode === "demo"} type="submit">
+              Save application packet
+            </button>
+          </form>
         </article>
         <aside className="rounded-md border border-line bg-white p-5 shadow-soft">
           <h2 className="font-semibold">Score breakdown</h2>

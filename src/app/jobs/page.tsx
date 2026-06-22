@@ -1,14 +1,16 @@
 import { AppShell } from "@/components/AppShell";
 import { EmptyState } from "@/components/EmptyState";
 import { JobCard } from "@/components/JobCard";
-import { demoJobSelections, demoMatches } from "@/lib/demo-data";
+import { getDashboardData } from "@/lib/user-data";
 
-export default function JobsPage() {
-  const savedIds = new Set(demoJobSelections.filter((selection) => selection.state === "saved").map((selection) => selection.jobId));
-  const ignoredIds = new Set(demoJobSelections.filter((selection) => selection.state === "ignored").map((selection) => selection.jobId));
-  const activeMatches = demoMatches.filter(({ job }) => !ignoredIds.has(job.id));
-  const savedMatches = demoMatches.filter(({ job }) => savedIds.has(job.id));
-  const ignoredMatches = demoMatches.filter(({ job }) => ignoredIds.has(job.id));
+export default async function JobsPage() {
+  const data = await getDashboardData();
+  const savedIds = new Set(data.selections.filter((selection) => selection.state === "saved").map((selection) => selection.jobId));
+  const ignoredIds = new Set(data.selections.filter((selection) => selection.state === "ignored").map((selection) => selection.jobId));
+  const selectionByJob = new Map(data.selections.map((selection) => [selection.jobId, selection.state]));
+  const activeMatches = data.matches.filter(({ job }) => !ignoredIds.has(job.id));
+  const savedMatches = data.matches.filter(({ job }) => savedIds.has(job.id));
+  const ignoredMatches = data.matches.filter(({ job }) => ignoredIds.has(job.id));
 
   return (
     <AppShell title="Job Matches">
@@ -29,7 +31,7 @@ export default function JobsPage() {
       </div>
       <section className="grid gap-4">
         {activeMatches.length ? activeMatches.map(({ job, match }) => (
-          <JobCard key={job.id} job={job} match={match} />
+          <JobCard key={job.id} job={job} match={match} selectionState={selectionByJob.get(job.id)} actionsDisabled={data.mode === "demo"} />
         )) : <EmptyState title="No active matches" body="All discovered jobs are ignored or filtered out. Refresh jobs or adjust your preferences." />}
       </section>
 
@@ -37,7 +39,7 @@ export default function JobsPage() {
         <h2 className="mb-3 font-semibold">Saved jobs</h2>
         {savedMatches.length ? (
           <div className="grid gap-4">
-            {savedMatches.map(({ job, match }) => <JobCard key={job.id} job={job} match={match} />)}
+            {savedMatches.map(({ job, match }) => <JobCard key={job.id} job={job} match={match} selectionState={selectionByJob.get(job.id)} actionsDisabled={data.mode === "demo"} />)}
           </div>
         ) : (
           <EmptyState title="No saved jobs yet" body="Save promising matches to build a focused application shortlist." />
@@ -48,7 +50,7 @@ export default function JobsPage() {
         <h2 className="mb-3 font-semibold">Ignored jobs</h2>
         {ignoredMatches.length ? (
           <div className="grid gap-4 opacity-70">
-            {ignoredMatches.map(({ job, match }) => <JobCard key={job.id} job={job} match={match} />)}
+            {ignoredMatches.map(({ job, match }) => <JobCard key={job.id} job={job} match={match} selectionState={selectionByJob.get(job.id)} actionsDisabled={data.mode === "demo"} />)}
           </div>
         ) : (
           <EmptyState title="No ignored jobs" body="Ignore jobs that are not worth revisiting so future reviews stay clean." />

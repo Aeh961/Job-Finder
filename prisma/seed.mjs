@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -14,10 +15,11 @@ const employers = [
 ];
 
 async function main() {
+  const passwordHash = await bcrypt.hash(process.env.DEMO_USER_PASSWORD ?? "password123", 12);
   const user = await prisma.user.upsert({
     where: { email: "demo@jobfinder.ai" },
-    update: {},
-    create: { email: "demo@jobfinder.ai", name: "Demo Software Engineer" }
+    update: { passwordHash },
+    create: { email: "demo@jobfinder.ai", name: "Demo Software Engineer", passwordHash }
   });
 
   await prisma.userProfile.upsert({

@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { EmptyState } from "@/components/EmptyState";
+import { generatePacketAction } from "@/app/actions";
 import { generateApplicationPacket } from "@/lib/ai";
-import { demoMatches, demoProfile } from "@/lib/demo-data";
+import { getDashboardData } from "@/lib/user-data";
 
 export default async function PacketsPage() {
-  const topMatches = demoMatches.filter(({ match }) => match.score >= 70).slice(0, 3);
-  const packets = await Promise.all(topMatches.map(({ job, match }) => generateApplicationPacket(demoProfile, job, match).then((packet) => ({ job, match, packet }))));
+  const data = await getDashboardData();
+  const topMatches = data.matches.filter(({ match }) => match.score >= 70).slice(0, 3);
+  const packets = await Promise.all(topMatches.map(({ job, match }) => generateApplicationPacket(data.profile, job, match).then((packet) => ({ job, match, packet }))));
 
   return (
     <AppShell title="Application Packets">
@@ -32,6 +34,10 @@ export default async function PacketsPage() {
               <Link href={`/jobs/${job.id}`} className="mt-4 inline-block rounded-md border border-line px-3 py-2 text-sm font-semibold">
                 Review job detail
               </Link>
+              <form action={generatePacketAction} className="mt-3 inline-block">
+                <input type="hidden" name="jobId" value={job.id} />
+                <button className="rounded-md bg-ink px-3 py-2 text-sm font-semibold text-white disabled:opacity-60" disabled={data.mode === "demo"} type="submit">Save packet</button>
+              </form>
             </article>
           ))}
         </div>

@@ -1,10 +1,16 @@
 # Roadmap
 
+## V3.1 Production Hardening
+
+- Move the full refresh worker into a shared service used by both `npm run refresh-jobs` and `/api/cron/refresh-jobs`.
+- Add transactional server actions with user-facing success and error toasts.
+- Add account settings for password changes and alert preferences.
+- Add integration tests for authenticated server actions.
+- Add migration files instead of relying on `prisma db push`.
+
 ## V2.1 Persistence
 
-- Wire onboarding, resume upload, employer watchlist, saved jobs, ignored jobs, and packets to Prisma mutations.
-- Add optimistic UI updates backed by real server actions.
-- Persist generated application packets per job.
+- Completed in V3 for the beta path.
 
 ## V2.2 Resume Intelligence
 

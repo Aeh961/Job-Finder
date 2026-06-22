@@ -42,7 +42,7 @@ npm install
 cp .env.example .env
 ```
 
-3. Start PostgreSQL and set `DATABASE_URL` in `.env`.
+3. Start PostgreSQL and set `DATABASE_URL`, `NEXTAUTH_SECRET`, and `NEXTAUTH_URL` in `.env`.
 
 4. Generate Prisma Client and apply the schema:
 
@@ -61,6 +61,17 @@ npm run dev
 6. Open [http://localhost:3000](http://localhost:3000).
 
 The app currently ships with demo data so it is usable before a database is connected.
+
+## Auth
+
+V3 uses NextAuth credentials auth with bcrypt password hashes. Seed creates:
+
+```text
+email: demo@jobfinder.ai
+password: password123
+```
+
+Sign in at `/signin`. Unsigned users can still browse the local demo mode, but database-backed profile, resume, employer, saved job, ignored job, application, and packet actions require sign-in.
 
 ## Tests
 
@@ -95,10 +106,25 @@ If no provider key is configured, the app renders the alert content locally and 
 
 1. Create a Vercel project from the GitHub repository.
 2. Add a hosted PostgreSQL database and set `DATABASE_URL`.
-3. Add optional `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `ALERT_EMAIL_TO`, and `EMAIL_FROM`.
-4. Keep the default build command: `npm run build`.
-5. The `postinstall` script runs `prisma generate` for deployment readiness.
-6. Run `npx prisma db push` or a migration command against production before first use.
+3. Add required `NEXTAUTH_SECRET`, `NEXTAUTH_URL`, and `CRON_SECRET`.
+4. Add optional `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `RESEND_API_KEY`, `ALERT_EMAIL_TO`, and `EMAIL_FROM`.
+5. Keep the default build command: `npm run build`.
+6. The `postinstall` script runs `prisma generate` for deployment readiness.
+7. Run `npx prisma db push` or a migration command against production before first use.
+8. Configure a Vercel Cron job to call `/api/cron/refresh-jobs` with `Authorization: Bearer $CRON_SECRET`, or schedule `npm run refresh-jobs` in a worker.
+
+## Screenshots
+
+![Landing page](public/screenshots/landing.png)
+![Dashboard](public/screenshots/dashboard.png)
+![Onboarding](public/screenshots/onboarding.png)
+![Resume upload](public/screenshots/resume-upload.png)
+![Employer watchlist](public/screenshots/employer-watchlist.png)
+![Jobs page](public/screenshots/jobs.png)
+![Job detail page](public/screenshots/job-detail.png)
+![Application packet page](public/screenshots/application-packets.png)
+
+To refresh screenshots locally, run the app and replace the PNG files in `public/screenshots/`.
 
 ## Job Discovery Policy
 

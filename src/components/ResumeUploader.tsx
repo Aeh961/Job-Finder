@@ -6,7 +6,7 @@ import { extractSkillsFromResume } from "@/lib/resume";
 
 const maxResumeBytes = 1024 * 1024;
 
-export function ResumeUploader() {
+export function ResumeUploader({ action, disabled = false }: { action?: (formData: FormData) => void | Promise<void>; disabled?: boolean }) {
   const [text, setText] = useState("");
   const [fileName, setFileName] = useState("");
   const [error, setError] = useState("");
@@ -48,7 +48,8 @@ export function ResumeUploader() {
   }
 
   return (
-    <div className="grid gap-5 rounded-md border border-line bg-white p-5 shadow-soft">
+    <form action={action} className="grid gap-5 rounded-md border border-line bg-white p-5 shadow-soft">
+      {disabled ? <p className="rounded-md bg-cloud px-3 py-2 text-sm text-ink/60">Demo mode is read-only. Sign in to save uploaded resumes.</p> : null}
       <label className="grid cursor-pointer place-items-center rounded-md border border-dashed border-line bg-cloud px-5 py-8 text-center">
         <Upload className="h-8 w-8 text-moss" />
         <span className="mt-3 text-sm font-semibold">Upload TXT or Markdown resume</span>
@@ -61,9 +62,15 @@ export function ResumeUploader() {
       {fileName && !error ? <p className="text-sm text-ink/55">Loaded {fileName}</p> : null}
 
       <label className="text-sm font-medium">
+        Resume title
+        <input className="mt-2 rounded-md border border-line px-3 py-2" name="title" defaultValue="Primary resume" />
+      </label>
+
+      <label className="text-sm font-medium">
         Resume text
         <textarea
           className="mt-2 min-h-64 rounded-md border border-line px-3 py-2"
+          name="resumeText"
           onChange={(event) => setText(event.target.value)}
           placeholder="Paste a resume or upload TXT/Markdown."
           value={text}
@@ -84,6 +91,9 @@ export function ResumeUploader() {
           <p className="mt-2 text-sm text-ink/55">No known skills detected yet.</p>
         )}
       </section>
-    </div>
+      <button className="w-fit rounded-md bg-ink px-4 py-2 text-sm font-semibold text-white disabled:opacity-60" disabled={disabled || !text} type="submit">
+        Save resume
+      </button>
+    </form>
   );
 }

@@ -4,7 +4,7 @@ import type { JobMatchResult, NormalizedJob } from "@/lib/types";
 import { ScoreBadge } from "./ScoreBadge";
 import { JobActions } from "./JobActions";
 
-export function JobCard({ job, match }: { job: NormalizedJob; match: JobMatchResult }) {
+export function JobCard({ job, match, selectionState, actionsDisabled = false }: { job: NormalizedJob; match: JobMatchResult; selectionState?: "saved" | "ignored"; actionsDisabled?: boolean }) {
   return (
     <article className="rounded-md border border-line bg-white p-4 shadow-soft">
       <div className="flex items-start justify-between gap-4">
@@ -26,7 +26,7 @@ export function JobCard({ job, match }: { job: NormalizedJob; match: JobMatchRes
         </a>
       </div>
       <div className="mt-4">
-        <JobActions />
+        <JobActions jobId={job.id} initialState={selectionState} disabled={actionsDisabled} />
       </div>
     </article>
   );
