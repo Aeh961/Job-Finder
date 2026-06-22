@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkMode {
+  remote
+  hybrid
+  onsite
+  flexible
+}
+
+enum BoardProvider {
+  greenhouse
+  lever
+  unsupported
+}
+
+enum ApplicationStatus {
+  discovered
+  interested
+  applied
+  interview
+  rejected
+  offer
+}
+
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  name        String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  profile     UserProfile?
+  resumes     Resume[]
+  preferences UserEmployerPreference[]
+  matches     JobMatch[]
+  applications Application[]
+  packets     GeneratedApplicationPacket[]
+}
+
+model UserProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  headline          String?
+  skills            String[]
+  desiredTitles     String[]
+  preferredLocations String[]
+  workMode          WorkMode @default(flexible)
+  needsSponsorship  Boolean  @default(false)
+  seniority         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Resume {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String   @default("Primary resume")
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Employer {
+  id            String        @id @default(cuid())
+  name          String        @unique
+  website       String?
+  boardProvider BoardProvider @default(unsupported)
+  boardToken    String?
+  careersUrl    String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  preferences   UserEmployerPreference[]
+  jobs          JobPosting[]
+}
+
+model UserEmployerPreference {
+  id         String   @id @default(cuid())
+  userId     String
+  employerId String
+  priority   Int      @default(3)
+  notes      String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employer   Employer @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, employerId])
+}
+
+model JobPosting {
+  id              String        @id @default(cuid())
+  employerId      String
+  sourceProvider  BoardProvider
+  externalId      String
+  title           String
+  department      String?
+  location        String?
+  workMode        WorkMode?
+  description     String
+  sourceUrl       String
+  originalJobUrl  String
+  applyUrl        String?
+  requiresVisa    Boolean?
+  postedAt        DateTime?
+  discoveredAt    DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  employer        Employer      @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  matches         JobMatch[]
+  applications    Application[]
+  packets         GeneratedApplicationPacket[]
+
+  @@unique([sourceProvider, externalId])
+}
+
+model JobMatch {
+  id                  String     @id @default(cuid())
+  userId              String
+  jobPostingId        String
+  score               Int
+  whyMatched          String[]
+  missingSkills       String[]
+  suggestedNextAction String
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobPosting          JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobPostingId])
+}
+
+model Application {
+  id           String            @id @default(cuid())
+  userId       String
+  jobPostingId String
+  status       ApplicationStatus @default(discovered)
+  notes        String?
+  appliedAt    DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobPosting   JobPosting        @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+  packets      GeneratedApplicationPacket[]
+
+  @@unique([userId, jobPostingId])
+}
+
+model GeneratedApplicationPacket {
+  id                    String      @id @default(cuid())
+  userId                String
+  applicationId         String?
+  jobPostingId          String
+  fitSummary            String
+  tailoredResumeSummary String
+  coverLetterDraft      String
+  recruiterMessage      String
+  checklist             String[]
+  provider              String      @default("local")
+  createdAt             DateTime    @default(now())
+  user                  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application           Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  jobPosting            JobPosting  @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+}
